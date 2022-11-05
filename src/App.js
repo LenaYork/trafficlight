@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 function App() {
     const [ activeCircle, setActiveCircle ] = useState(1);
+    const [ isIncreasing, setIsIncreasing ] = useState(true);
     const [ timeLeft, setTimeLeft ] = useState(10);
 
     useEffect( () => {
@@ -29,6 +30,37 @@ function App() {
             clearInterval(changeSeconds);
         } 
     }, [timeLeft])
+
+    useEffect( () => {
+        const timings = [10000, 3000, 15000]
+        const changeActiveCircle = () => {
+            let newActiveCircle = activeCircle;
+
+            if (isIncreasing === false) {
+                if (newActiveCircle > 1) {
+                    newActiveCircle--;
+                } else {
+                    setIsIncreasing(true);
+                    localStorage.setItem("isIncreasing", JSON.stringify(true))
+                    newActiveCircle++;
+                }
+            } else {
+                if (activeCircle > 3) {
+                    newActiveCircle = 2;
+                    setIsIncreasing(false);
+                    localStorage.setItem("isIncreasing", JSON.stringify(false))
+                }  else newActiveCircle++;
+            }
+
+            setActiveCircle(newActiveCircle);
+            localStorage.setItem("activeCircle", JSON.stringify(newActiveCircle))
+        }
+        let changeLights;
+            changeLights = setInterval(changeActiveCircle, timings[activeCircle-1]);
+        return () => {
+            clearInterval(changeLights);
+        } 
+    }, [activeCircle, isIncreasing ])
 
     return (
         <div className='app'>
